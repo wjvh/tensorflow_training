@@ -40,6 +40,6 @@ for i in range(1000):
     sess.run(train, feed_dict=train_data)
     print("Training Accuracy = ",sess.run(accuracy,feed_dict = train_data))
 
-# Step 5: Evaluation
+# Step 6: Evaluation
 test_data = {X:mnist.test.images,y:mnist.test.labels}
 print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))
