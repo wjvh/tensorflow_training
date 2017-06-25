@@ -47,7 +47,7 @@ https://www.tertiarycourses.com.sg/deep-learning-neural-network-tensorflow.html
 <li>TensorFlow Playground</li>
 </ul>
 <h2>Day 2</h2>
-<p><strong>Module 6 Concurrent Neural Network (CNN)</strong></p>
+<p><strong>Module 6 Convolutional Neural Network (CNN)</strong></p>
 <ul>
 <li>What is CNN?</li>
 <li>CNN Architecture</li>
