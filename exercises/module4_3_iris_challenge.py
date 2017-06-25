@@ -1,5 +1,6 @@
-# Iris Flower Dataset - Classification
-# Challenge
+# Module 4: Simple TF Models
+# Challenge: Iris flower dataset
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
@@ -17,13 +18,11 @@ Y = np.eye(num_labels)[target]
 
 # Split the data into training and testing sets
 from sklearn.model_selection import train_test_split
-
 train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.33, random_state=42)
 
 # Step 1: Initial Setup
-X_size = train_X.shape[1]
-X = tf.placeholder(tf.float32, [None, X_size])
-W = tf.Variable(tf.zeros([X_size, 3]))
+X = tf.placeholder(tf.float32, [None, 4])
+W = tf.Variable(tf.zeros([4, 3]))
 b = tf.Variable(tf.zeros([3]))
 
 # Step 2: Define Model

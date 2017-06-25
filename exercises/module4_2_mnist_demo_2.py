@@ -1,5 +1,5 @@
 # Module 4: Simple TF Model
-# Use softmax cross-entropy function with MINST Dataset
+# Use softmax cross-entropy function on MINST dataset
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'

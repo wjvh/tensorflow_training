@@ -1,5 +1,5 @@
 # Module 4: Simple TF Model
-# Demo TF model with MINST dataset
+# Simple TF model on MINST dataset
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'

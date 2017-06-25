@@ -1,4 +1,6 @@
 # Module 4: Simple TF Model
+# Simple TF Model - Linear Regression
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 

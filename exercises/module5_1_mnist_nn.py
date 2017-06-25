@@ -1,5 +1,5 @@
-# Module 5_1
-# Multiple Layers Neural Network
+# Module 5: Neural Network and Deep Learning
+# NN model for MNIST dataset.
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'

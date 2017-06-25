@@ -1,80 +1,75 @@
+# Module 5: Neural Network and Deep Learning
+# Challenge: Iris Flower dataset
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
+
 import tensorflow as tf
 import numpy as np
 from sklearn import datasets
-from sklearn.model_selection import train_test_split
 
-RANDOM_SEED = 42
-tf.set_random_seed(RANDOM_SEED)
-
-n_nodes_hl1 = 50
-n_nodes_hl2 = 20
-n_nodes_hl3 = 10
-
-n_classes = 3
-
-""" Read the iris data set and split them into training and test sets """
 iris = datasets.load_iris()
-data = iris["data"]
-target = iris["target"]
+X = iris.data
+target = iris.target
 
-# Convert into one-hot vectors
+# Convert the label into one-hot vector
 num_labels = len(np.unique(target))
-all_Y = np.eye(num_labels)[target]  # One liner trick!
-train_X, test_X, train_y, test_y = train_test_split(data, all_Y, test_size=0.33, random_state=RANDOM_SEED)
+Y = np.eye(num_labels)[target]
 
-x_size = train_X.shape[1]  # Number of input nodes: 4 features and 1 bias
-y_size = train_y.shape[1]
+# Split the data into training and testing sets
+from sklearn.model_selection import train_test_split
+train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.33, random_state=42)
 
-graph = tf.Graph()
+# Step 1: Initial Setup
+X = tf.placeholder(tf.float32, [None, 4])
+y = tf.placeholder(tf.float32, [None, 3])
 
-with graph.as_default():
-    X = tf.placeholder("float", shape=[None, x_size])
-    y = tf.placeholder("float", shape=[None, y_size])
+L1 = 200
+L2 = 100
+L3 = 60
+L4 = 30
 
-    hidden_1_layer = {'weights': tf.Variable(tf.random_normal([x_size, n_nodes_hl1])),
-                      'biases': tf.Variable(tf.random_normal([n_nodes_hl1]))}
+W1 = tf.Variable(tf.truncated_normal([4, L1], stddev=0.1))
+B1 = tf.Variable(tf.zeros([L1]))
+W2 = tf.Variable(tf.truncated_normal([L1, L2], stddev=0.1))
+B2 = tf.Variable(tf.zeros([L2]))
+W3 = tf.Variable(tf.truncated_normal([L2, L3], stddev=0.1))
+B3 = tf.Variable(tf.zeros([L3]))
+W4 = tf.Variable(tf.truncated_normal([L3, L4], stddev=0.1))
+B4 = tf.Variable(tf.zeros([L4]))
+W5 = tf.Variable(tf.truncated_normal([L4, 3], stddev=0.1))
+B5 = tf.Variable(tf.zeros([3]))
 
-    hidden_2_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl1, n_nodes_hl2])),
-                      'biases': tf.Variable(tf.random_normal([n_nodes_hl2]))}
+# Step 2: Setup Model
+Y1 = tf.nn.relu(tf.matmul(X, W1) + B1)
+Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
+Y3 = tf.nn.relu(tf.matmul(Y2, W3) + B3)
+Y4 = tf.nn.relu(tf.matmul(Y3, W4) + B4)
+Ylogits = tf.matmul(Y4, W5) + B5
+yhat = tf.nn.softmax(Ylogits)
 
-    hidden_3_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl2, n_nodes_hl3])),
-                      'biases': tf.Variable(tf.random_normal([n_nodes_hl3]))}
+# Step 3: Loss Functions
+loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y)
 
-    output_layer = {'weights': tf.Variable(tf.random_normal([n_nodes_hl3, n_classes])),
-                    'biases': tf.Variable(tf.random_normal([n_classes])), }
+# Step 4: Optimizer
+optimizer = tf.train.GradientDescentOptimizer(0.001)
+# optimizer = tf.train.AdamOptimizer(0.1)
+train = optimizer.minimize(loss)
 
-    l1 = tf.add(tf.matmul(X, hidden_1_layer['weights']), hidden_1_layer['biases'])
-    l1 = tf.nn.relu(l1)
+# accuracy of the trained model, between 0 (worst) and 1 (best)
+is_correct = tf.equal(tf.argmax(y,1),tf.argmax(yhat,1))
+accuracy = tf.reduce_mean(tf.cast(is_correct,tf.float32))
 
-    l2 = tf.add(tf.matmul(l1, hidden_2_layer['weights']), hidden_2_layer['biases'])
-    l2 = tf.nn.relu(l2)
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
 
-    l3 = tf.add(tf.matmul(l2, hidden_3_layer['weights']), hidden_3_layer['biases'])
-    l3 = tf.nn.relu(l3)
+# Step 5: Training Loop
+for epoch in range(150):
+    for i in range(len(train_X)):
+        training_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
+        sess.run(train, feed_dict = training_data)
 
-    output = tf.matmul(l3, output_layer['weights']) + output_layer['biases']
-
-    acc = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))
-    acc = tf.reduce_mean(tf.cast(acc, tf.float32))
-
-    # Backward propagation
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=output))
-    updates = tf.train.GradientDescentOptimizer(0.001).minimize(cost)
-
-    # Run SGD
-    with tf.Session(graph=graph) as sess:
-        init = tf.global_variables_initializer()
-        sess.run(init)
-        for epoch in range(15):
-            # Train with each example
-            for i in range(len(train_X)):
-                sess.run(updates, feed_dict={X: train_X[i: i + 1], y: train_y[i: i + 1]})
-            print("Epoch = %d, train accuracy = %.2f%%, test accuracy = %.2f%%"
-                  % (epoch + 1, 100. * acc.eval({X: train_X, y: train_y}),
-                     100. * acc.eval({X: test_X, y: test_y})))
-
-            # predict = tf.argmax(output, axis=1)
-            # train_accuracy = np.mean(np.argmax(train_y, axis=1) ==
-            #                          sess.run(predict, feed_dict={X: train_X, y: train_y}))
-            # test_accuracy = np.mean(np.argmax(test_y, axis=1) ==
-            #                         sess.run(predict, feed_dict={X: test_X, y: test_y}))
+# Step 6: Evaluation
+testing_data = {X: test_X, y: test_Y}
+print("Training Accuracy = ", sess.run(accuracy, feed_dict = testing_data))
