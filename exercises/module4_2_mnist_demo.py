@@ -4,6 +4,10 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
+# Parameters
+learning_rate = 0.001
+batch_size = 100
+
 import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
@@ -22,7 +26,7 @@ y = tf.placeholder(tf.float32, [None, 10]) # placeholder for correct answers
 loss = -tf.reduce_sum(y*tf.log(yhat))
 
 # Step 4: Optimizer
-optimizer = tf.train.GradientDescentOptimizer(0.001)
+optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 train = optimizer.minimize(loss)
 
 # % of correct answer found in batches
@@ -35,7 +39,7 @@ sess.run(init)
 
 # Step 5: Training Loop
 for i in range(1000):
-    batch_X, batch_y = mnist.train.next_batch(100)
+    batch_X, batch_y = mnist.train.next_batch(batch_size)
     train_data = {X: batch_X, y: batch_y}
     sess.run(train, feed_dict=train_data)
     print("Training Accuracy = ",sess.run(accuracy,feed_dict = train_data))
