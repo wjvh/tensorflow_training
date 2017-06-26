@@ -49,22 +49,24 @@ with tf.name_scope('Accuracy'):
     correct_prediction = tf.equal(tf.argmax(yhat, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+tf.summary.scalar("Loss", loss)
+tf.summary.scalar("Accuracy", accuracy)
+summary_op = tf.summary.merge_all()
+
 init = tf.global_variables_initializer()
 sess = tf.Session()
 sess.run(init)
 
 #Runnning the Graph on tensor board
 file_writer = tf.summary.FileWriter(logs_path, sess.graph)
-tf.summary.scalar("Loss", loss)
-tf.summary.scalar("Accuracy", accuracy)
-summary_op = tf.summary.merge_all()
+
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
     for i in range(len(train_X)):
         training_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
-        sess.run(train, feed_dict = training_data)
-
+        _, summary = sess.run([train, summary_op], feed_dict =training_data)
+        file_writer.add_summary(summary, global_step=epoch*len(train_X) + i)
 # Step 6: Evaluation
 testing_data = {X: test_X, y: test_Y}
 print("Training Accuracy = ", sess.run(accuracy, feed_dict = testing_data))

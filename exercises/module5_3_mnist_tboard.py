@@ -5,7 +5,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.001
+learning_rate = 0.02
 training_epochs = 2
 batch_size = 100
 logs_path = '/tmp/tensorflow/2'
@@ -49,7 +49,7 @@ with tf.name_scope('Model'):
 
 # Step 3: Loss Functions
 with tf.name_scope('Loss'):
-    loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y)
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y))
 
 # Step 4: Optimizer
 with tf.name_scope('Train'):
@@ -77,7 +77,8 @@ for epoch in range(training_epochs):
     for i in range(int(55000/batch_size)):
         batch_X, batch_y = mnist.train.next_batch(batch_size)
         train_data = {X: batch_X, y: batch_y}
-        sess.run(train, feed_dict=train_data)
+        _, summary = sess.run([train, summary_op], feed_dict =train_data)
+        file_writer.add_summary(summary, global_step=epoch*int(55000/batch_size) + i)
         print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
 
 # Step 6: Evaluation
