@@ -5,13 +5,12 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.02
+learning_rate = 0.001
 training_epochs = 2
 batch_size = 100
-logs_path = '/tmp/tensorflow/2'
+logs_path = '/tmp/tensorflow/8'
 
 import tensorflow as tf
-tf.reset_default_graph()
 
 from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("mnist", one_hot=True)
@@ -49,7 +48,7 @@ with tf.name_scope('Model'):
 
 # Step 3: Loss Functions
 with tf.name_scope('Loss'):
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y))
+    loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y)
 
 # Step 4: Optimizer
 with tf.name_scope('Train'):
@@ -68,7 +67,7 @@ sess.run(init)
 
 #Runnning the Graph on tensor board
 file_writer = tf.summary.FileWriter(logs_path, sess.graph)
-tf.summary.scalar("Loss", loss)
+tf.summary.scalar("Loss", tf.reduce_mean(loss))
 tf.summary.scalar("Accuracy", accuracy)
 summary_op = tf.summary.merge_all()
 

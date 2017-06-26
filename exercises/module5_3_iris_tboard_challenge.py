@@ -7,7 +7,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # Parameters
 learning_rate = 0.001
 training_epochs = 150
-logs_path = '/tmp/tensorflow/3'
+logs_path = '/tmp/tensorflow/7'
 
 import tensorflow as tf
 import numpy as np
@@ -38,7 +38,7 @@ with tf.name_scope('Model'):
 
 # Step 3: Loss Function
 with tf.name_scope('Loss'):
-    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=yhat))
+    loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=yhat)
 
 # Step 4: Optimizer
 with tf.name_scope('Train'):
@@ -49,7 +49,7 @@ with tf.name_scope('Accuracy'):
     correct_prediction = tf.equal(tf.argmax(yhat, 1), tf.argmax(y, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-tf.summary.scalar("Loss", loss)
+tf.summary.scalar("Loss", tf.reduce_mean(loss))
 tf.summary.scalar("Accuracy", accuracy)
 summary_op = tf.summary.merge_all()
 
