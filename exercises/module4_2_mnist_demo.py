@@ -5,13 +5,13 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.001
+learning_rate = 0.005
 batch_size = 100
 
 import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True)
+mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
 
 # Step 1: Initial Setup
 X = tf.placeholder(tf.float32, [None, 784])
@@ -22,7 +22,7 @@ b = tf.Variable(tf.zeros([10]))
 yhat = tf.nn.softmax(tf.matmul(X,W)+b)
 y = tf.placeholder(tf.float32, [None, 10]) # placeholder for correct answers
 
-# Step 3: Loss Functions
+# Step 3: Cross Entropy Loss Functions
 loss = -tf.reduce_sum(y*tf.log(yhat))
 
 # Step 4: Optimizer

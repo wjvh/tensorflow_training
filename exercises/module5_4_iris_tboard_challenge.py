@@ -1,24 +1,34 @@
 # Module 5: Neural Network and Deep Learning
-# Tensorboard demo: NN model for MNIST dataset
+# Tensorboard Challenge: NN model for iris dataset
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.5
-training_epochs = 2
-batch_size = 100
-logs_path = '/tmp/tensorflow/mnist'
+learning_rate = 0.005
+training_epochs = 150
+logs_path = '/tmp/tensorflow/iris'
 
 import tensorflow as tf
+import numpy as np
+from sklearn import datasets
 
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
+iris = datasets.load_iris()
+X = iris.data
+target = iris.target
+
+# Convert the label into one-hot vector
+num_labels = len(np.unique(target))
+Y = np.eye(num_labels)[target]
+
+# Split the data into training and testing sets
+from sklearn.model_selection import train_test_split
+train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.33, random_state=42)
 
 # Step 1: Initial Setup
 with tf.name_scope('Inputs') as scope:
-    X = tf.placeholder(tf.float32, [None, 784])
-    y = tf.placeholder(tf.float32, [None, 10])
+    X = tf.placeholder(tf.float32, [None, 4])
+    y = tf.placeholder(tf.float32, [None, 3])
 
 L1 = 200
 L2 = 100
@@ -26,7 +36,7 @@ L3 = 60
 L4 = 30
 
 with tf.name_scope('Variables'):
-    W1 = tf.Variable(tf.truncated_normal([784, L1], stddev=0.1))
+    W1 = tf.Variable(tf.truncated_normal([4, L1], stddev=0.1))
     B1 = tf.Variable(tf.zeros([L1]))
     W2 = tf.Variable(tf.truncated_normal([L1, L2], stddev=0.1))
     B2 = tf.Variable(tf.zeros([L2]))
@@ -34,8 +44,8 @@ with tf.name_scope('Variables'):
     B3 = tf.Variable(tf.zeros([L3]))
     W4 = tf.Variable(tf.truncated_normal([L3, L4], stddev=0.1))
     B4 = tf.Variable(tf.zeros([L4]))
-    W5 = tf.Variable(tf.truncated_normal([L4, 10], stddev=0.1))
-    B5 = tf.Variable(tf.zeros([10]))
+    W5 = tf.Variable(tf.truncated_normal([L4, 3], stddev=0.1))
+    B5 = tf.Variable(tf.zeros([3]))
 
 # Step 2: Setup Model
 with tf.name_scope('Model'):
@@ -74,16 +84,15 @@ summary_op = tf.summary.merge_all()
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
-    for i in range(int(55000/batch_size)):
-        batch_X, batch_y = mnist.train.next_batch(batch_size)
-        train_data = {X: batch_X, y: batch_y}
-        _, summary = sess.run([train, summary_op], feed_dict =train_data)
-        file_writer.add_summary(summary, global_step=epoch*int(55000/batch_size) + i)
+    for i in range(len(train_X)):
+        train_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
+        _, summary = sess.run([train, summary_op], feed_dict=train_data)
+        file_writer.add_summary(summary, global_step=epoch*len(train_X)+i)
         print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
 
 # Step 6: Evaluation
-test_data = {X:mnist.test.images,y:mnist.test.labels}
-print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))
+test_data = {X: test_X, y: test_Y}
+print("Training Accuracy = ", sess.run(accuracy, feed_dict = test_data))
 
 print("Run the command line")
 print("tensorboard --logdir={}".format(logs_path))

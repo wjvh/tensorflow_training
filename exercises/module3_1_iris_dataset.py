@@ -1,5 +1,7 @@
 # Module 3: Datasets
 # Iris Flower Dataset
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Step 1 Get Data
 from sklearn import datasets

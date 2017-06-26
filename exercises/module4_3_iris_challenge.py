@@ -34,7 +34,8 @@ yhat = tf.matmul(X, W) + b
 y = tf.placeholder(tf.float32, [None, 3]) # Placeholder for correct answer
 
 # Step 3: Loss Function
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=yhat))
+loss = tf.reduce_mean(
+    tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=yhat))
 
 # Step 4: Optimizer
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)

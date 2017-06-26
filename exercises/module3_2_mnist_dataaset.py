@@ -5,8 +5,9 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 import matplotlib.pyplot as plt
+
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True)
+mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
 
 train_X = mnist.train.images
 train_y = mnist.train.labels
@@ -24,9 +25,9 @@ def show_digit(index):
     plt.imshow(image, cmap='gray_r')
     plt.show()
 
-# show_digit(1)
-# show_digit(2)
-# show_digit(3)
+show_digit(1)
+show_digit(2)
+show_digit(3)
 
 batch_X, batch_Y = mnist.train.next_batch(100)
 print(batch_X.shape)

@@ -4,6 +4,10 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
+# Parameters
+learning_rate = 0.005
+training_epochs = 10
+
 import tensorflow as tf
 import numpy as np
 from sklearn import datasets
@@ -49,10 +53,11 @@ Ylogits = tf.matmul(Y4, W5) + B5
 yhat = tf.nn.softmax(Ylogits)
 
 # Step 3: Loss Functions
-loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y)
+loss = tf.reduce_mean(
+    tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=Ylogits))
 
 # Step 4: Optimizer
-optimizer = tf.train.GradientDescentOptimizer(0.001)
+optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 # optimizer = tf.train.AdamOptimizer(0.1)
 train = optimizer.minimize(loss)
 
@@ -65,11 +70,13 @@ sess = tf.Session()
 sess.run(init)
 
 # Step 5: Training Loop
-for epoch in range(150):
+for epoch in range(training_epochs):
     for i in range(len(train_X)):
-        training_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
-        sess.run(train, feed_dict = training_data)
+        train_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
+        sess.run(train, feed_dict = train_data)
+        print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
+
 
 # Step 6: Evaluation
-testing_data = {X: test_X, y: test_Y}
-print("Training Accuracy = ", sess.run(accuracy, feed_dict = testing_data))
+test_data = {X: test_X, y: test_Y}
+print("Training Accuracy = ", sess.run(accuracy, feed_dict = test_data))

@@ -1,18 +1,18 @@
 # Module 5: Neural Network and Deep Learning
-# NN model for MNIST dataset.
+# NN model for MNIST dataset
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.001
+learning_rate = 0.5
 training_epochs = 2
 batch_size = 100
 
 import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True)
+mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
 
 # Step 1: Initial Setup
 X = tf.placeholder(tf.float32, [None, 784])
@@ -43,7 +43,8 @@ Ylogits = tf.matmul(Y4, W5) + B5
 yhat = tf.nn.softmax(Ylogits)
 
 # Step 3: Loss Functions
-loss = tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y)
+loss = tf.reduce_mean(
+   tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=Ylogits))
 
 # Step 4: Optimizer
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)

@@ -11,7 +11,7 @@ learning_rate = 0.5
 batch_size = 100
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True)
+mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
 
 # Step 1: Initial Setup
 X = tf.placeholder(tf.float32, [None, 784])
