@@ -1,86 +1,110 @@
-# Tensorflow workshop with Jan Idziak
-# -------------------------------------
-#
-# script harvested from:
-# https://pythonprogramming.net
-#
-# Implementing Convolutional Neural Network
-# ---------------------------------------
-#
-import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
-from tflearn.datasets import cifar10
-from tflearn.data_utils import shuffle, to_categorical
-import numpy as np
+# Module 5: Convolutional Neural Network (CNN)
+# CIFAR-10 Challenge
 
-#model_path = '/home/michal/DataScience/Data Scientist/Udacity/Deep Learning/Assignment1/'
-(X, Y), (X_test, Y_test) = cifar10.load_data()
-X, Y = shuffle(X, Y)
-Y = to_categorical(Y, 10)
-Y_test = to_categorical(Y_test, 10)
+# CNN structure:
+# · · · · · · · · · ·      input data                           X  [batch, 28, 28, 1]
+# @ @ @ @ @ @ @ @ @ @   -- conv. layer 6x6x1x6 stride 1         W1 [5, 5, 1, 6]
+# ∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶                                           Y1 [batch, 28, 28, 6]
+#   @ @ @ @ @ @ @ @     -- conv. layer 5x5x6x12  stride 2       W2 [5, 5, 6, 12]
+#   ∶∶∶∶∶∶∶∶∶∶∶∶∶∶∶                                             Y2 [batch, 14, 14, 12]
+#     @ @ @ @ @ @       -- conv. layer 4x4x12x24 stride 2       W3 [3, 3, 12, 24]
+#     ∶∶∶∶∶∶∶∶∶∶∶                                               Y3 [batch, 7, 7, 24]
+#      \x/x\x\x/        -- fully connected layer (relu)         W4 [7*7*24, 200]
+#       · · · ·                                                 Y4 [batch, 200]
+#       \x/x\x/         -- fully connected layer (softmax)      W5 [200, 10]
+#        · · ·                                                  Y [batch, 10]
 
-n_classes = 10
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# Parameters
+learning_rate = 0.01
+training_epochs = 1
 batch_size = 100
 
-graph = tf.Graph()
+import tensorflow as tf
+from tflearn.datasets import cifar10
+from tflearn.data_utils import to_categorical
 
-with graph.as_default():
-    weights = {'W_conv1': tf.Variable(tf.random_normal([5, 5, 3, 32], stddev=2/np.sqrt(5*5*3))),
-               'W_conv2': tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=2/np.sqrt(3*3*32))),
-               'W_fc': tf.Variable(tf.random_normal([8 * 8 * 64, 1024], stddev=2/np.sqrt(8*8*64*1024))),
-               'out': tf.Variable(tf.random_normal([1024, n_classes], stddev=2/np.sqrt(1024*n_classes)))}
+(X_train, Y_train), (X_test, Y_test) = cifar10.load_data()
+Y_train = to_categorical(Y_train, 10)
+Y_test = to_categorical(Y_test, 10)
 
-    biases = {'b_conv1': tf.Variable(tf.random_normal([32])),
-              'b_conv2': tf.Variable(tf.random_normal([64])),
-              'b_fc': tf.Variable(tf.random_normal([1024])),
-              'out': tf.Variable(tf.random_normal([n_classes]))}
+# Step 1: Initial Setup
+X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+y = tf.placeholder(tf.float32, [None, 10])
+pkeep = tf.placeholder(tf.float32)
 
-    x = tf.placeholder('float', [None, 32, 32, 3])
-    y = tf.placeholder('float', [None, 10])
-    keep_prob = tf.placeholder(tf.float32)
-    #x = tf.reshape(x, shape=[-1, 28, 28, 1])
+# three convolutional layers with their channel counts, and a
+# fully connected layer (tha last layer has 10 softmax neurons)
+L1 = 8  # first convolutional layer output depth
+L2 = 16  # second convolutional layer output depth
+L3 = 32  # third convolutional layer
+L4 = 200  # fully connected layer
 
-    conv1 = tf.nn.relu(tf.nn.conv2d(x, weights['W_conv1'], strides=[1, 1, 1, 1], padding='SAME') + biases['b_conv1'])
-    conv1 = tf.nn.max_pool(conv1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-    conv1 = tf.nn.dropout(conv1, keep_prob)
-    conv2 = tf.nn.relu(tf.nn.conv2d(conv1, weights['W_conv2'], strides=[1, 1, 1, 1], padding='SAME') + biases['b_conv2'])
-    conv2 = tf.nn.max_pool(conv2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+W1 = tf.Variable(tf.truncated_normal([5, 5, 3, L1], stddev=0.1))
+B1 = tf.Variable(tf.zeros([L1]))
+W2 = tf.Variable(tf.truncated_normal([5, 5, L1, L2], stddev=0.1))
+B2 = tf.Variable(tf.zeros([L2]))
+W3 = tf.Variable(tf.truncated_normal([3, 3, L2, L3], stddev=0.1))
+B3 = tf.Variable(tf.zeros([L3]))
+W4 = tf.Variable(tf.truncated_normal([8 * 8 * L3, L4], stddev=0.1))
+B4 = tf.Variable(tf.zeros([L4]))
+W5 = tf.Variable(tf.truncated_normal([L4, 10], stddev=0.1))
+B5 = tf.Variable(tf.zeros([10]))
 
-    fc = tf.reshape(conv2, [-1, 8 * 8 * 64])
-    fc = tf.nn.relu(tf.matmul(fc, weights['W_fc']) + biases['b_fc'])
-    fc = tf.nn.dropout(fc, keep_prob)
+# Step 2: Setup Model
+# output is 32x32
+Y1 = tf.nn.relu(tf.nn.conv2d(X, W1, strides=[1, 1, 1, 1], padding='SAME') + B1)
+stride = 2  # output is 16x16
+Y2 = tf.nn.relu(tf.nn.conv2d(Y1, W2, strides=[1, 1, 1, 1], padding='SAME') + B2)
+Y2 = tf.nn.max_pool(Y2, ksize=[1, 2, 2, 1], strides=[1, stride, stride, 1], padding='SAME')
+stride = 2  # output is 8x8
+Y3 = tf.nn.relu(tf.nn.conv2d(Y2, W3, strides=[1, 1, 1, 1], padding='SAME') + B3)
+Y3 = tf.nn.max_pool(Y3, ksize=[1, 2, 2, 1], strides=[1, stride, stride, 1], padding='SAME')
 
-    output = tf.matmul(fc, weights['out']) + biases['out']
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=y))
-    optimizer = tf.train.AdamOptimizer().minimize(cost)
-    correct = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))
-    accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
+# reshape the output from the third convolution for the fully connected layer
+YY = tf.reshape(Y3, shape=[-1, 8 * 8 * L3])
 
-hm_epochs = 10
-with tf.Session(graph=graph) as sess:
-    sess.run(tf.global_variables_initializer())
+Y4 = tf.nn.relu(tf.matmul(YY, W4) + B4)
+YY4 = tf.nn.dropout(Y4, pkeep)
+Ylogits = tf.matmul(Y4, W5) + B5
+yhat = tf.nn.softmax(Ylogits)
 
-    for epoch in range(hm_epochs):
-        epoch_loss = 0
-        for step in range(int(X.shape[0] / batch_size)):
-            epoch_x = X[(step*batch_size):((step+1)*batch_size)]
-            epoch_y = Y[(step * batch_size):((step + 1) * batch_size)]
-            _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y, keep_prob: 0.8})
-            epoch_loss += c
-        print('Epoch', epoch + 1, 'completed out of', hm_epochs, 'loss:', epoch_loss)
-    acc = []
-    for i in range(int(X_test.shape[0] / batch_size)):
-        acc.append(accuracy.eval({x: X_test[(i*batch_size):((i+1)*batch_size)],
-                                  y: Y_test[(i*batch_size):((i+1)*batch_size)], keep_prob: 1}))
-    print('Accuracy:', sess.run(tf.reduce_mean(acc)))
+# Step 3: Loss Functions
+loss = tf.reduce_mean(
+    tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y))
 
-# Prepare CNN neural network for the Iris data.
-# Use:
-# - Two conwolutional layers
-# (filter size: first: 5, returns: 16, second: 3, returns:32)
-# - Two pooling layers
-# - reshape to appropriate size for the fully connected layer
+# Step 4: Optimizer
+optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+# optimizer = tf.train.AdamOptimizer(0.1)
+train = optimizer.minimize(loss)
 
-# Train the network for 3 epochs
-# Use bach size of 100
-# Calculate accuracy for just 5000 first observations from train set
+# accuracy of the trained model, between 0 (worst) and 1 (best)
+is_correct = tf.equal(tf.argmax(y, 1), tf.argmax(yhat, 1))
+accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+# Step 5: Training Loop
+for epoch in range(training_epochs):
+    for i in range(int(X_train.shape[0] / batch_size)):
+        batch_X = X_train[(i*batch_size):((i+1)*batch_size)]
+        batch_y = Y_train[(i*batch_size):((i+1)*batch_size)]
+        train_data = {X: batch_X, y: batch_y, pkeep: 0.7}
+        sess.run(train, feed_dict = train_data)
+        print("Training Accuracy/Loss = ", sess.run([accuracy,loss], feed_dict = train_data))
+
+# Step 6: Evaluation
+acc = []
+for i in range(int(X_test.shape[0] / batch_size)):
+    batch_X = X_test[(i*batch_size):((i+1)*batch_size)]
+    batch_y = Y_test[(i*batch_size):((i+1)*batch_size)]
+    test_data = {X: batch_X, y: batch_y}
+    sess.run(train, feed_dict = test_data)
+    acc.append(sess.run(accuracy, feed_dict = test_data))
+
+print("Testing Accuracy/Loss = ", sess.run(tf.reduce_mean(acc)))

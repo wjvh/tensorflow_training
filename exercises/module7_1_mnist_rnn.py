@@ -1,55 +1,73 @@
-# Tensorflow workshop with Michal Krason
-# ---------------------------------------
+# Module 7: Recurrent Neural Network
+# RNN model for MNIST dataset
 
-import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
-from tensorflow.contrib import rnn
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
-mnist = input_data.read_data_sets("data", one_hot=True)
-
-hm_epochs = 3
-n_classes = 10
+# Parameters
+learning_rate = 0.5
+training_epochs = 2
 batch_size = 100
 chunk_size = 28
 n_chunks = 28
 rnn_size = 128
 
-graph = tf.Graph()
+import tensorflow as tf
+from tensorflow.contrib import rnn
+from tensorflow.examples.tutorials.mnist import input_data
 
-with graph.as_default():
-    x = tf.placeholder('float', [None, n_chunks, chunk_size])
-    y = tf.placeholder('float')
+mnist = input_data.read_data_sets("mnist", one_hot=True)
 
-    layer = {'weights': tf.Variable(tf.random_normal([rnn_size, n_classes])),
-             'biases': tf.Variable(tf.random_normal([n_classes]))}
-    inp = tf.unstack(x, axis=1)
-    lstm_cell = rnn.BasicLSTMCell(rnn_size)
-    outputs, states = rnn.static_rnn(lstm_cell, inp, dtype=tf.float32)
-    output = tf.matmul(outputs[-1], layer['weights']) + layer['biases']
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=output, labels=y))
-    optimizer = tf.train.AdamOptimizer().minimize(cost)
+# Step 1: Initial Setup
+X = tf.placeholder(tf.float32, [None, n_chunks, chunk_size])
+y = tf.placeholder(tf.float32)
 
-with tf.Session(graph=graph) as sess:
-    sess.run(tf.global_variables_initializer())
+W = tf.Variable(tf.random_normal([rnn_size, 10]))
+B = tf.Variable(tf.random_normal([10]))
 
-    for epoch in range(hm_epochs):
-        epoch_loss = 0
-        for step in range(int(mnist.train.num_examples / batch_size)):
-            epoch_x, epoch_y = mnist.train.next_batch(batch_size)
-            epoch_x = epoch_x.reshape((batch_size, n_chunks, chunk_size))
-            _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-            epoch_loss += c
-        print('Epoch', epoch + 1, 'completed out of', hm_epochs, 'loss:', epoch_loss)
+# Step 2: Setup Model
+inp = tf.unstack(X, axis=1)
 
-    correct = tf.equal(tf.argmax(output, 1), tf.argmax(y, 1))
+# LSTM Cell
+# lstm_cell = rnn.BasicLSTMCell(rnn_size)
+# H, states = rnn.static_rnn(lstm_cell, inp, dtype=tf.float32)
 
-    accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-    print('Accuracy:', accuracy.eval({x: mnist.test.images.reshape((-1, n_chunks, chunk_size)), y: mnist.test.labels}))
+# GRU Cell
+GRU = rnn.GRUCell(rnn_size)
+H, states = rnn.static_rnn(GRU, inp, dtype=tf.float32)
 
-    # Prepare RNN neural network for the Iris data.
-    # Use:
-    # - BasicLSTM cell
-    # - Initialize data with random uniform distribution variables
-    # - Put two rows of the picture as a chunk size
-    # - RNN size should be 56
-    # - Use SGD optimizer
+Ylogits = tf.matmul(H[-1], W) + B
+yhat = tf.nn.softmax(Ylogits)
+
+# Step 3: Loss Functions
+loss = tf.reduce_mean(
+   tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=Ylogits))
+
+# Step 4: Optimizer
+#optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+optimizer = tf.train.AdamOptimizer(0.01)
+train = optimizer.minimize(loss)
+
+# accuracy of the trained model, between 0 (worst) and 1 (best)
+is_correct = tf.equal(tf.argmax(y,1),tf.argmax(yhat,1))
+accuracy = tf.reduce_mean(tf.cast(is_correct,tf.float32))
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+# Step 5: Training Loop
+for epoch in range(training_epochs):
+    for i in range(int(55000/batch_size)):
+        batch_X, batch_y = mnist.train.next_batch(batch_size)
+        batch_X = batch_X.reshape((batch_size, n_chunks, chunk_size))
+        train_data = {X: batch_X, y: batch_y}
+        sess.run(train, feed_dict=train_data)
+        print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
+
+# Step 6: Evaluation
+test_X = mnist.test.images
+test_y = mnist.test.labels
+test_X = test_X.reshape((-1, n_chunks, chunk_size))
+print("Testing Accuracy = ", sess.run(accuracy, feed_dict = {X:test_X,y:test_y}))
+

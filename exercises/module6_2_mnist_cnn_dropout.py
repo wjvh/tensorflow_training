@@ -62,8 +62,8 @@ Y3 = tf.nn.relu(tf.nn.conv2d(Y2, W3, strides=[1, stride, stride, 1], padding='SA
 YY = tf.reshape(Y3, shape=[-1, 7 * 7 * L3])
 
 Y4 = tf.nn.relu(tf.matmul(YY, W4) + B4)
-YY4 = tf.nn.dropout(Y4, pkeep)
-Ylogits = tf.matmul(Y4, W5) + B5
+YY4 = tf.nn.dropout(Y4,  keep_prob=pkeep)
+Ylogits = tf.matmul(YY4, W5) + B5
 yhat = tf.nn.softmax(Ylogits)
 
 # Step 3: Loss Functions
@@ -92,5 +92,5 @@ for epoch in range(training_epochs):
         print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
 
 # Step 6: Evaluation
-test_data = {X:mnist.test.images,y:mnist.test.labels, pkeep: 1.0}
+test_data = {X:mnist.test.images,y:mnist.test.labels, pkeep: 0.75}
 print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))

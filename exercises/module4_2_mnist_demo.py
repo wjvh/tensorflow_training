@@ -5,7 +5,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.005
+learning_rate = 0.008
 batch_size = 100
 
 import tensorflow as tf
@@ -33,8 +33,8 @@ train = optimizer.minimize(loss)
 is_correct = tf.equal(tf.argmax(y,1),tf.argmax(yhat,1))
 accuracy = tf.reduce_mean(tf.cast(is_correct,tf.float32))
 
-init = tf.global_variables_initializer()
 sess = tf.Session()
+init = tf.global_variables_initializer()
 sess.run(init)
 
 # Step 5: Training Loop

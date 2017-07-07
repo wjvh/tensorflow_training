@@ -31,12 +31,13 @@ mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=False,validation
 X = tf.placeholder(tf.float32, [None, 28, 28, 1])
 y = tf.placeholder(tf.float32, [None, 10])
 
-# three convolutional layers with their channel counts, and a
-# fully connected layer (tha last layer has 10 softmax neurons)
-L1 = 4 # first convolutional layer output depth
-L2 = 8 # second convolutional layer output depth
-L3 = 12 # third convolutional layer
-L4 = 200 # fully connected layer
+# Three convolutional layers with their channel counts, a
+# fully connected layer and the last layer with 10 softmax neurons
+# define the output channels for each convolutional layer
+L1 = 4
+L2 = 8
+L3 = 12
+L4 = 200
 
 W1 = tf.Variable(tf.truncated_normal([5,5,1,L1], stddev=0.1))
 B1 = tf.Variable(tf.zeros([L1]))
@@ -58,7 +59,7 @@ stride = 2  # output is 7x7
 Y3 = tf.nn.relu(tf.nn.conv2d(Y2, W3, strides=[1, stride, stride, 1], padding='SAME') + B3)
 
 # reshape the output from the third convolution for the fully connected layer
-YY = tf.reshape(Y3, shape=[-1, 7 * 7 * L3])
+YY = tf.reshape(Y3, shape=[-1, 7*7*L3])
 
 Y4 = tf.nn.relu(tf.matmul(YY, W4) + B4)
 Ylogits = tf.matmul(Y4, W5) + B5
@@ -70,7 +71,7 @@ loss = tf.reduce_mean(
 
 # Step 4: Optimizer
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-# optimizer = tf.train.AdamOptimizer(0.1)
+# optimizer = tf.train.AdamOptimizer(learning_rate)
 train = optimizer.minimize(loss)
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)
@@ -87,8 +88,8 @@ for epoch in range(training_epochs):
         batch_X, batch_y = mnist.train.next_batch(batch_size)
         train_data = {X: batch_X, y: batch_y}
         sess.run(train, feed_dict=train_data)
-        print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
+        print("Training Accuracy/Loss = ", sess.run([accuracy,loss], feed_dict=train_data))
 
 # Step 6: Evaluation
 test_data = {X:mnist.test.images,y:mnist.test.labels}
-print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))
+print("Testing Accuracy/Loss = ", sess.run([accuracy,loss], feed_dict = test_data))
