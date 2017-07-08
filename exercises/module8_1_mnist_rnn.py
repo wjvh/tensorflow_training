@@ -1,4 +1,4 @@
-# Module 7: Recurrent Neural Network
+# Module 8: Recurrent Neural Network
 # RNN model for MNIST dataset
 
 import os
@@ -58,7 +58,7 @@ sess.run(init)
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
-    for i in range(int(55000/batch_size)):
+    for i in range(int(mnist.train.num_examples/batch_size)):
         batch_X, batch_y = mnist.train.next_batch(batch_size)
         batch_X = batch_X.reshape((batch_size, n_chunks, chunk_size))
         train_data = {X: batch_X, y: batch_y}

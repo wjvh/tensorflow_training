@@ -1,4 +1,4 @@
-# Module 5: Convolutional Neural Network (CNN)
+# Module 7: Convolutional Neural Network (CNN)
 # CNN model for MNIST dataset
 
 # CNN structure:

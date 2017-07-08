@@ -1,4 +1,4 @@
-# Module 7: Recurrent Neural Network
+# Module 8: Recurrent Neural Network
 # Challenge: RNN on CIFAR-10 dataset
 
 import os

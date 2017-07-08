@@ -1,4 +1,4 @@
-# Module 5: Convolutional Neural Network (CNN)
+# Module 7: Convolutional Neural Network (CNN)
 # CNN model with dropout for MNIST dataset
 
 # CNN structure:
@@ -85,7 +85,7 @@ sess.run(init)
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
-    for i in range(int(60000/batch_size)):
+    for i in range(int(mnist.train.num_examples/batch_size)):
         batch_X, batch_y = mnist.train.next_batch(batch_size)
         train_data = {X: batch_X, y: batch_y, pkeep: 1.0}
         sess.run(train, feed_dict=train_data)

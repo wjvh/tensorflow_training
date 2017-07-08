@@ -1,5 +1,6 @@
-# Module 5: Neural Network and Deep Learning
-# Tensorboard Challenge: NN model for iris dataset
+# Module 6: Tensorboard
+# Author: Dr. Alfred Ang
+# Challange: Tensorbard for iris dataset
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
@@ -7,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # Parameters
 learning_rate = 0.005
 training_epochs = 150
-logs_path = '/tmp/tensorflow/iris'
+logdir = '/tmp/iris'
 
 import tensorflow as tf
 import numpy as np
@@ -37,15 +38,15 @@ L4 = 30
 
 with tf.name_scope('Variables'):
     W1 = tf.Variable(tf.truncated_normal([4, L1], stddev=0.1))
-    B1 = tf.Variable(tf.zeros([L1]))
+    B1 = tf.Variable(tf.random_normal([L1]))
     W2 = tf.Variable(tf.truncated_normal([L1, L2], stddev=0.1))
-    B2 = tf.Variable(tf.zeros([L2]))
+    B2 = tf.Variable(tf.random_normal([L2]))
     W3 = tf.Variable(tf.truncated_normal([L2, L3], stddev=0.1))
-    B3 = tf.Variable(tf.zeros([L3]))
+    B3 = tf.Variable(tf.random_normal([L3]))
     W4 = tf.Variable(tf.truncated_normal([L3, L4], stddev=0.1))
-    B4 = tf.Variable(tf.zeros([L4]))
+    B4 = tf.Variable(tf.random_normal([L4]))
     W5 = tf.Variable(tf.truncated_normal([L4, 3], stddev=0.1))
-    B5 = tf.Variable(tf.zeros([3]))
+    B5 = tf.Variable(tf.random_normal([3]))
 
 # Step 2: Setup Model
 with tf.name_scope('Model'):
@@ -77,7 +78,7 @@ sess = tf.Session()
 sess.run(init)
 
 # Runnning the Graph on tensor board
-file_writer = tf.summary.FileWriter(logs_path, sess.graph)
+writer = tf.summary.FileWriter(logdir, sess.graph)
 tf.summary.scalar("Loss", loss)
 tf.summary.scalar("Accuracy", accuracy)
 summary_op = tf.summary.merge_all()
@@ -87,13 +88,9 @@ for epoch in range(training_epochs):
     for i in range(len(train_X)):
         train_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
         _, summary = sess.run([train, summary_op], feed_dict=train_data)
-        file_writer.add_summary(summary, global_step=epoch*len(train_X)+i)
+        writer.add_summary(summary, global_step=epoch*len(train_X)+i)
         print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
 
 # Step 6: Evaluation
 test_data = {X: test_X, y: test_Y}
 print("Training Accuracy = ", sess.run(accuracy, feed_dict = test_data))
-
-print("Run the command line")
-print("tensorboard --logdir={}".format(logs_path))
-print("Then open tensorboard on your web browser")

@@ -1,5 +1,6 @@
-# Module 5: Neural Network and Deep Learning
-# Tensorboard demo: NN model for MNIST dataset
+# Module 6: Tensorboard
+# Author: Dr. Alfred Ang
+# Challange: Tensorbard for MNIST dataset
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
@@ -8,12 +9,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 learning_rate = 0.5
 training_epochs = 2
 batch_size = 100
-logs_path = '/tmp/tensorflow/mnist'
+logs_path = '/tmp/mnist/2'
 
 import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
+mnist = input_data.read_data_sets("mnist", one_hot=True)
 
 # Step 1: Initial Setup
 with tf.name_scope('Inputs') as scope:
@@ -67,24 +68,22 @@ sess = tf.Session()
 sess.run(init)
 
 # Runnning the Graph on tensor board
-file_writer = tf.summary.FileWriter(logs_path, sess.graph)
+writer = tf.summary.FileWriter(logs_path, sess.graph)
 tf.summary.scalar("Loss", loss)
 tf.summary.scalar("Accuracy", accuracy)
 summary_op = tf.summary.merge_all()
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
-    for i in range(int(55000/batch_size)):
+    num_batches = int(mnist.train.num_examples/batch_size)
+    for i in range(num_batches):
         batch_X, batch_y = mnist.train.next_batch(batch_size)
         train_data = {X: batch_X, y: batch_y}
-        _, summary = sess.run([train, summary_op], feed_dict =train_data)
-        file_writer.add_summary(summary, global_step=epoch*int(55000/batch_size) + i)
+        summary = sess.run(summary_op, feed_dict =train_data)
+        writer.add_summary(summary, global_step=epoch*num_batches + i)
+        sess.run(train, feed_dict=train_data)
         print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
 
 # Step 6: Evaluation
 test_data = {X:mnist.test.images,y:mnist.test.labels}
 print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))
-
-print("Run the command line")
-print("tensorboard --logdir={}".format(logs_path))
-print("Then open tensorboard on your web browser")

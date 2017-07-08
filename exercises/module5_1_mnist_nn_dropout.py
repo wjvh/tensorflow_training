@@ -62,7 +62,7 @@ sess.run(init)
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
-    for i in range(int(55000/batch_size)):
+    for i in range(int(mnist.train.num_examples/batch_size)):
         batch_X, batch_y = mnist.train.next_batch(batch_size)
         train_data = {X: batch_X, y: batch_y}
         sess.run(train, feed_dict=train_data)

@@ -1,5 +1,5 @@
-# Tensorflow workshop with Michal Krason
-# ---------------------------------------
+# Module 8: Recurrent Neural Network
+# Challenge: RNN on IMDB dataset
 
 import numpy as np
 import tensorflow as tf

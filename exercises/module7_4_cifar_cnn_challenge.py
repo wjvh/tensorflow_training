@@ -1,5 +1,5 @@
-# Module 5: Convolutional Neural Network (CNN)
-# CIFAR-10 Challenge
+# Module 7: Convolutional Neural Network (CNN)
+# Challenge : CIFAR-10 dataset
 
 # CNN structure:
 # · · · · · · · · · ·      input data                           X  [batch, 28, 28, 1]
