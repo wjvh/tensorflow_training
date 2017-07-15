@@ -5,17 +5,18 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 import tensorflow as tf
+tf.set_random_seed(25)
 
 # Parameters
 learning_rate = 0.5
 batch_size = 100
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
+mnist = input_data.read_data_sets("mnist", one_hot=True)
 
 # Step 1: Initial Setup
 X = tf.placeholder(tf.float32, [None, 784])
-W = tf.Variable(tf.zeros([784, 10]))
+W = tf.Variable(tf.truncated_normal([784, 10],stddev=0.1))
 b = tf.Variable(tf.zeros([10]))
 
 # Step 2: Setup Model
@@ -43,8 +44,10 @@ for i in range(1000):
     batch_X, batch_y = mnist.train.next_batch(batch_size)
     train_data = {X: batch_X, y: batch_y}
     sess.run(train, feed_dict=train_data)
-    print("Training Accuracy = ",sess.run(accuracy,feed_dict = train_data))
 
-# Step 5: Prediction
+    print(i+1, "Training accuracy =",sess.run(accuracy, feed_dict=train_data),
+          "Loss =",sess.run(loss, feed_dict=train_data))
+
+# Step 6: Evaluation
 test_data = {X:mnist.test.images,y:mnist.test.labels}
-print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))
+print("Testing accuracy = ",sess.run(accuracy, feed_dict=test_data))

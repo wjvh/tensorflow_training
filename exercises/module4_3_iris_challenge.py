@@ -5,8 +5,8 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.001
-training_epochs = 150
+learning_rate = 0.05
+training_epochs = 20
 
 import tensorflow as tf
 import numpy as np
@@ -22,12 +22,12 @@ Y = np.eye(num_labels)[target]
 
 # Split the data into training and testing sets
 from sklearn.model_selection import train_test_split
-train_X, test_X, train_Y, test_Y = train_test_split(X, Y, test_size=0.33, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.33, random_state=42)
 
 # Step 1: Initial Setup
 X = tf.placeholder(tf.float32, [None, 4])
-W = tf.Variable(tf.zeros([4, 3]))
-b = tf.Variable(tf.zeros([3]))
+W = tf.Variable(tf.truncated_normal([4, 3],stddev=0.1))
+b = tf.Variable(tf.truncated_normal([3],stddev=0.1))
 
 # Step 2: Define Model
 yhat = tf.matmul(X, W) + b
@@ -50,12 +50,14 @@ sess.run(init)
 
 # Step 5: Training Loop
 for epoch in range(training_epochs):
-    for i in range(len(train_X)):
-        training_data = {X: train_X[i: i + 1], y: train_Y[i: i + 1]}
-        sess.run(train, feed_dict = training_data)
+    for i in range(len(X_train)):
+        train_data = {X: X_train[i: i + 1], y: y_train[i: i + 1]}
+        sess.run(train, feed_dict = train_data)
+        print(epoch*len(X_train)+i, "Training accuracy =", sess.run(accuracy, feed_dict=train_data),
+          "Loss =", sess.run(loss, feed_dict=train_data))
 
 # Step 6: Evaluation
-testing_data = {X: test_X, y: test_Y}
-print("Training Accuracy = ", sess.run(accuracy, feed_dict = testing_data))
+test_data = {X: X_test, y: y_test}
+print("Training Accuracy = ", sess.run(accuracy, feed_dict = test_data))
 
 

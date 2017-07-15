@@ -1,16 +1,24 @@
 # Module 3: Datasets
 # CIFAR-10 dataset
-
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
-# Step 1 Get Data
-from tflearn.datasets import cifar10
-(X, Y), (X_test, Y_test) = cifar10.load_data()
+# CIFAR-10 dataset from TFLearn
+# from tflearn.datasets import cifar10
+# (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
-# Step 2 Shuffle Data
-from tflearn.data_utils import shuffle, to_categorical
-X, Y = shuffle(X, Y)
-Y = to_categorical(Y, 10)
-Y_test = to_categorical(Y_test, 10)
+# from tflearn.data_utils import shuffle, to_categorical
+# X_train, y_train = shuffle(X_train, y_train)
+# y_train = to_categorical(y_train, 10)
+# y_test = to_categorical(y_test, 10)
 
+# CIFAR-10 dataset from Keras
+from keras.datasets import cifar10
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+
+import matplotlib.pyplot as plt
+from scipy.misc import toimage
+for i in range(0, 9):
+	plt.subplot(3,3,i+1)
+	plt.imshow(toimage(X_train[i]))
+plt.show()

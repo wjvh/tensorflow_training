@@ -7,27 +7,28 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import matplotlib.pyplot as plt
 
 from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("mnist", one_hot=True,reshape=True,validation_size=0)
+mnist = input_data.read_data_sets("mnist", one_hot=True)
 
-train_X = mnist.train.images
-train_y = mnist.train.labels
-test_X = mnist.test.images
-test_y = mnist.test.labels
+X_train = mnist.train.images
+y_train = mnist.train.labels
+X_test = mnist.test.images
+y_test = mnist.test.labels
 
-print(len(mnist.train.images))
-print(len(mnist.test.images))
-print(len(mnist.validation.images))
+# print(X_train.shape)
+# print(y_train.shape)
+# print(X_test.shape)
+# print(y_test.shape)
 
 def show_digit(index):
-    label = train_y[index].argmax(axis=0)
-    image = train_X[index].reshape([28,28])
+    label = y_train[index].argmax(axis=0)
+    image = X_train[index].reshape([28,28])
     plt.title('Digit : {}'.format(label))
     plt.imshow(image, cmap='gray_r')
     plt.show()
 
-show_digit(1)
-show_digit(2)
-show_digit(3)
 
-batch_X, batch_Y = mnist.train.next_batch(100)
-print(batch_X.shape)
+show_digit(1)
+
+
+# batch_X, batch_Y = mnist.train.next_batch(100)
+# print(batch_X.shape)
