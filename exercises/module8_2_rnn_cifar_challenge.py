@@ -9,10 +9,10 @@ from tensorflow.contrib import rnn
 from tflearn.datasets import cifar10
 from tflearn.data_utils import shuffle, to_categorical
 
-(X_train, Y_train), (X_test, Y_test) = cifar10.load_data()
-X_train, Y_train = shuffle(X_train, Y_train)
-Y_train = to_categorical(Y_train, 10)
-Y_test = to_categorical(Y_test, 10)
+(X_train, y_train), (X_test, y_test) = cifar10.load_data()
+X_train, y_train = shuffle(X_train, y_train)
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
 
 training_epochs = 8
 n_classes = 10
@@ -49,7 +49,7 @@ loss = tf.reduce_mean(
 
 # Step 4: Optimizer
 #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-optimizer = tf.train.AdamOptimizer(0.05)
+optimizer = tf.train.AdamOptimizer()
 train = optimizer.minimize(loss)
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)
@@ -64,7 +64,7 @@ sess.run(init)
 for epoch in range(training_epochs):
     for i in range(int(X_train.shape[0] / batch_size)):
         batch_X = X_train[(i*batch_size):((i+1)*batch_size)]
-        batch_y = Y_train[(i*batch_size):((i+1)*batch_size)]
+        batch_y = y_train[(i*batch_size):((i+1)*batch_size)]
         train_data = {X: batch_X, y: batch_y}
         sess.run(train, feed_dict=train_data)
         print("Training Accuracy = ", sess.run(accuracy, feed_dict=train_data))
@@ -73,7 +73,7 @@ for epoch in range(training_epochs):
 acc = []
 for i in range(int(X_test.shape[0] / batch_size)):
     batch_X = X_test[(i*batch_size):((i+1)*batch_size)]
-    batch_y = Y_test[(i*batch_size):((i+1)*batch_size)]
+    batch_y = y_test[(i*batch_size):((i+1)*batch_size)]
     test_data = {X: batch_X, y: batch_y}
     sess.run(train, feed_dict = test_data)
     acc.append(sess.run(accuracy, feed_dict = test_data))

@@ -25,38 +25,31 @@ pkeep = tf.placeholder(tf.float32)
 
 # three convolutional layers with their channel counts, and a
 # fully connected layer (tha last layer has 10 softmax neurons)
-L1 = 8  # first convolutional layer output depth
-L2 = 16  # second convolutional layer output depth
-L3 = 32  # third convolutional layer
-L4 = 200  # fully connected layer
+L1 = 32  # first convolutional layer output depth
+L2 = 64  # second convolutional layer output depth
+L3 = 1024   # Fully connected layer
 
 W1 = tf.Variable(tf.truncated_normal([5, 5, 3, L1], stddev=0.1))
 B1 = tf.Variable(tf.zeros([L1]))
-W2 = tf.Variable(tf.truncated_normal([5, 5, L1, L2], stddev=0.1))
+W2 = tf.Variable(tf.truncated_normal([3, 3, L1, L2], stddev=0.1))
 B2 = tf.Variable(tf.zeros([L2]))
-W3 = tf.Variable(tf.truncated_normal([3, 3, L2, L3], stddev=0.1))
+W3 = tf.Variable(tf.truncated_normal([8 * 8 * L2, L3], stddev=0.1))
 B3 = tf.Variable(tf.zeros([L3]))
-W4 = tf.Variable(tf.truncated_normal([8 * 8 * L3, L4], stddev=0.1))
-B4 = tf.Variable(tf.zeros([L4]))
-W5 = tf.Variable(tf.truncated_normal([L4, 10], stddev=0.1))
-B5 = tf.Variable(tf.zeros([10]))
+W4 = tf.Variable(tf.truncated_normal([L3, 10], stddev=0.1))
+B4 = tf.Variable(tf.zeros([10]))
 
 # Step 2: Setup Model
-# output is 32x32
 Y1 = tf.nn.relu(tf.nn.conv2d(X, W1, strides=[1, 1, 1, 1], padding='SAME') + B1)
-stride = 2  # output is 16x16
+Y1 = tf.nn.max_pool(Y1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 Y2 = tf.nn.relu(tf.nn.conv2d(Y1, W2, strides=[1, 1, 1, 1], padding='SAME') + B2)
-Y2 = tf.nn.max_pool(Y2, ksize=[1, 2, 2, 1], strides=[1, stride, stride, 1], padding='SAME')
-stride = 2  # output is 8x8
-Y3 = tf.nn.relu(tf.nn.conv2d(Y2, W3, strides=[1, 1, 1, 1], padding='SAME') + B3)
-Y3 = tf.nn.max_pool(Y3, ksize=[1, 2, 2, 1], strides=[1, stride, stride, 1], padding='SAME')
+Y2 = tf.nn.max_pool(Y2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 # reshape the output from the third convolution for the fully connected layer
-YY = tf.reshape(Y3, shape=[-1, 8 * 8 * L3])
+YY = tf.reshape(Y2, shape=[-1, 8 * 8 * L2])
 
-Y4 = tf.nn.relu(tf.matmul(YY, W4) + B4)
-YY4 = tf.nn.dropout(Y4, pkeep)
-Ylogits = tf.matmul(Y4, W5) + B5
+Y3 = tf.nn.relu(tf.matmul(YY, W3) + B3)
+YY3 = tf.nn.dropout(Y3, pkeep)
+Ylogits = tf.matmul(Y3, W4) + B4
 yhat = tf.nn.softmax(Ylogits)
 
 # Step 3: Loss Functions

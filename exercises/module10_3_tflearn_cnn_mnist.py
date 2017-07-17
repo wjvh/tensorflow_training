@@ -9,7 +9,7 @@ n_classes = 10
 learning_rate = 0.5
 training_epochs = 2
 batch_size = 100
-logdir = '/tmp/mnist/11'
+logdir = '/tmp/mnist/12'
 
 import tflearn
 from tflearn.layers.conv import conv_2d, max_pool_2d
@@ -37,8 +37,8 @@ network = fully_connected(network, n_classes, activation='softmax')
 network = regression(network, optimizer='adam', learning_rate=0.01, loss='categorical_crossentropy')
 
 # Step 3: Training
-model = tflearn.DNN(network)
-#model = tflearn.DNN(network,tensorboard_dir=logdir,tensorboard_verbose=3)
+#model = tflearn.DNN(network)
+model = tflearn.DNN(network,tensorboard_dir=logdir,tensorboard_verbose=3)
 model.fit(X_train, y_train, n_epoch=training_epochs, show_metric=True, batch_size=batch_size)
 
 

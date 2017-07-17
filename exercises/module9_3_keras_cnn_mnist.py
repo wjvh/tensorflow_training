@@ -36,7 +36,7 @@ y_test = keras.utils.to_categorical(y_test, n_classes)
 
 # Step 2: Build the Network
 model = Sequential()
-model.add(Conv2D(32,(3, 3),activation='relu',input_shape=(28,28,1)))
+model.add(Conv2D(32,(3, 3),activation='relu',input_shape=(28,28,1),padding='same'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Conv2D(64,(3, 3),activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -46,11 +46,11 @@ model.add(Dense(128, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(n_classes, activation='softmax'))
 model.compile(loss='binary_crossentropy', optimizer='adam',metrics=['accuracy'])
-
+print(model.summary())
 # Step 3: Training
-model.fit(X_train, y_train, epochs=training_epochs,batch_size=batch_size)
+#model.fit(X_train, y_train, epochs=training_epochs,batch_size=batch_size)
 
 # Step 4: Evaluation
-score = model.evaluate(X_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+#score = model.evaluate(X_test, y_test, verbose=0)
+#print('Test loss:', score[0])
+#print('Test accuracy:', score[1])

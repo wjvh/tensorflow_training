@@ -26,7 +26,6 @@ B = tf.Variable(tf.random_normal([10]))
 # Step 2: Setup Model
 inp = tf.unstack(X, axis=1)
 
-
 cell = rnn.BasicRNNCell(rnn_size) # Simple RNN  Cell
 # cell = rnn.BasicLSTMCell(rnn_size) # LSTM Cell
 # cell = rnn.GRUCell(rnn_size) # GRU Cell
