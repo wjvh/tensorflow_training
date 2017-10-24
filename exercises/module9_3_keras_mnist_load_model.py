@@ -12,8 +12,7 @@ training_epochs = 2
 batch_size = 100
 
 import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.models import load_model
 
 # Step 1: Pre-process the  Data
 from keras.datasets import mnist
@@ -28,27 +27,7 @@ y_train = keras.utils.to_categorical(y_train, n_classes)
 y_test = keras.utils.to_categorical(y_test, n_classes)
 
 # Step 2: Build the  Network
-L1 = 1024
-L2 = 512
-L3 = 256
-L4 = 128
-L5 = 64
-L6 = 32
-
-model = Sequential()
-model.add(Dense(L1, input_dim=n_features, activation='relu'))
-# model.add(Dropout(0.2))
-model.add(Dense(L2, activation='relu'))
-# model.add(Dropout(0.2))
-model.add(Dense(L3, activation='relu'))
-model.add(Dense(L4, activation='relu'))
-model.add(Dense(L5, activation='relu'))
-model.add(Dense(L6, activation='relu'))
-model.add(Dense(n_classes, activation='softmax'))
-model.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
-
-# Step 3: Training
-model.fit(X_train, y_train, epochs=training_epochs,batch_size=batch_size)
+model = load_model('trained_model_mnist.h5')
 
 # Step 4: Evaluation
 score = model.evaluate(X_test, y_test, batch_size=batch_size)

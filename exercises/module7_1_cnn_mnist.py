@@ -17,7 +17,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
-# Parameters
+# Hyper Parameters
 learning_rate = 0.01
 training_epochs = 2
 batch_size = 100
@@ -61,7 +61,7 @@ Y3= tf.nn.dropout(Y3, pkeep)
 YY = tf.reshape(Y3, shape=[-1, 7 * 7 * L3])
 
 Y4 = tf.nn.relu(tf.matmul(YY, W4) + B4)
-YY4 = tf.nn.dropout(Y4, 0.3)
+#YY4 = tf.nn.dropout(Y4, 0.3)
 Ylogits = tf.matmul(Y4, W5) + B5
 yhat = tf.nn.softmax(Ylogits)
 
@@ -70,8 +70,8 @@ loss = tf.reduce_mean(
     tf.nn.softmax_cross_entropy_with_logits(logits=Ylogits, labels=y))
 
 # Step 4: Optimizer
-# optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-optimizer = tf.train.AdamOptimizer()
+optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+#optimizer = tf.train.AdamOptimizer()
 train = optimizer.minimize(loss)
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)

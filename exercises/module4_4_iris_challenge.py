@@ -58,6 +58,6 @@ for epoch in range(training_epochs):
 
 # Step 6: Evaluation
 test_data = {X: X_test, y: y_test}
-print("Training Accuracy = ", sess.run(accuracy, feed_dict = test_data))
+print("Testing Accuracy = ", sess.run(accuracy, feed_dict = test_data))
 
 

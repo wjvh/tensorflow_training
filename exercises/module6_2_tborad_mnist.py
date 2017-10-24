@@ -9,7 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 learning_rate = 0.5
 training_epochs = 2
 batch_size = 100
-logdir = '/tmp/mnist/8'
+logdir = '/users/alfred/Desktop/mnist/adam2'
 
 import tensorflow as tf
 tf.set_random_seed(25)
@@ -55,8 +55,8 @@ with tf.name_scope('Loss'):
 
 # Step 4: Optimizer
 with tf.name_scope('Train'):
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    # optimizer = tf.train.AdamOptimizer(0.1)
+    #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+    optimizer = tf.train.AdamOptimizer(0.01)
     train = optimizer.minimize(loss)
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)

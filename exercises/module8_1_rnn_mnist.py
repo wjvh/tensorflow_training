@@ -12,8 +12,8 @@ rnn_size = 128
 
 import tensorflow as tf
 from tensorflow.contrib import rnn
-from tensorflow.examples.tutorials.mnist import input_data
 
+from tensorflow.examples.tutorials.mnist import input_data
 mnist = input_data.read_data_sets("mnist", one_hot=True)
 
 # Step 1: Initial Setup
@@ -26,11 +26,12 @@ B = tf.Variable(tf.random_normal([10]))
 # Step 2: Setup Model
 inp = tf.unstack(X, axis=1)
 
-cell = rnn.BasicRNNCell(rnn_size) # Simple RNN  Cell
-# cell = rnn.BasicLSTMCell(rnn_size) # LSTM Cell
-# cell = rnn.GRUCell(rnn_size) # GRU Cell
+# cell = rnn.BasicRNNCell(rnn_size) # Simple RNN  Cell
+# H = rnn.static_rnn(cell, inp, dtype=tf.float32)
 
-H, states = rnn.static_rnn(cell, inp, dtype=tf.float32)
+# cell = rnn.BasicLSTMCell(rnn_size) # LSTM Cell
+cell = rnn.GRUCell(rnn_size) # GRU Cell
+H, C = rnn.static_rnn(cell, inp, dtype=tf.float32)
 
 Ylogits = tf.matmul(H[-1], W) + B
 yhat = tf.nn.softmax(Ylogits)
@@ -40,8 +41,8 @@ loss = tf.reduce_mean(
    tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=Ylogits))
 
 # Step 4: Optimizer
-#optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-optimizer = tf.train.AdamOptimizer(0.01)
+optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+# optimizer = tf.train.AdamOptimizer(0.01)
 train = optimizer.minimize(loss)
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)

@@ -24,6 +24,7 @@ L1 = 200
 L2 = 100
 L3 = 60
 L4 = 30
+L5 = 30
 
 W1 = tf.Variable(tf.truncated_normal([784, L1], stddev=0.1))
 B1 = tf.Variable(tf.zeros([L1]))
@@ -33,8 +34,10 @@ W3 = tf.Variable(tf.truncated_normal([L2, L3], stddev=0.1))
 B3 = tf.Variable(tf.zeros([L3]))
 W4 = tf.Variable(tf.truncated_normal([L3, L4], stddev=0.1))
 B4 = tf.Variable(tf.zeros([L4]))
-W5 = tf.Variable(tf.truncated_normal([L4, 10], stddev=0.1))
-B5 = tf.Variable(tf.zeros([10]))
+W5 = tf.Variable(tf.truncated_normal([L4, L5], stddev=0.1))
+B5 = tf.Variable(tf.zeros([L5]))
+W6 = tf.Variable(tf.truncated_normal([L5, 10], stddev=0.1))
+B6 = tf.Variable(tf.zeros([10]))
 
 # Step 2: Setup Model
 # Y1 = tf.nn.sigmoid(tf.matmul(X, W1) + B1)
@@ -45,7 +48,8 @@ Y1 = tf.nn.relu(tf.matmul(X, W1) + B1)
 Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
 Y3 = tf.nn.relu(tf.matmul(Y2, W3) + B3)
 Y4 = tf.nn.relu(tf.matmul(Y3, W4) + B4)
-Ylogits = tf.matmul(Y4, W5) + B5
+Y5 = tf.nn.relu(tf.matmul(Y4, W5) + B4)
+Ylogits = tf.matmul(Y5, W6) + B6
 yhat = tf.nn.softmax(Ylogits)
 
 # Step 3: Loss Functions

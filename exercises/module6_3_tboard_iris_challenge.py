@@ -8,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # Parameters
 learning_rate = 0.05
 training_epochs = 20
-logdir = '/tmp/mnist/7'
+logdir = '/tmp/iris/8878/3'
 
 import tensorflow as tf
 import numpy as np
@@ -60,8 +60,8 @@ with tf.name_scope('Loss'):
 
 # Step 4: Optimizer
 with tf.name_scope('Train'):
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-    # optimizer = tf.train.AdamOptimizer(0.1)
+    #optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+    optimizer = tf.train.AdamOptimizer(0.001)
     train = optimizer.minimize(loss)
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)

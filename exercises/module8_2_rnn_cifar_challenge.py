@@ -30,7 +30,7 @@ B = tf.Variable(tf.random_normal([n_classes]))
 
 # Step 2: Setup Model
 inp = tf.reshape(X, [-1, n_chunks, chunk_size])
-inp = tf.unstack(inp, axis=1)
+# inp = tf.unstack(inp, axis=1)
 
 # LSTM Cell
 LSTM = rnn.BasicLSTMCell(rnn_size)

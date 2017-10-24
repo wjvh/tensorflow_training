@@ -48,9 +48,9 @@ model.add(Dense(n_classes, activation='softmax'))
 model.compile(loss='binary_crossentropy', optimizer='adam',metrics=['accuracy'])
 print(model.summary())
 # Step 3: Training
-#model.fit(X_train, y_train, epochs=training_epochs,batch_size=batch_size)
+model.fit(X_train, y_train, epochs=training_epochs,batch_size=batch_size)
 
 # Step 4: Evaluation
-#score = model.evaluate(X_test, y_test, verbose=0)
-#print('Test loss:', score[0])
-#print('Test accuracy:', score[1])
+score = model.evaluate(X_test, y_test, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])

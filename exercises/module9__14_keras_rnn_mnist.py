@@ -8,10 +8,10 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense, SimpleRNN, LSTM,GRU
 
-batch_size = 32
+batch_size = 28
 n_classes = 10
 epochs = 20
-hidden_units = 10
+hidden_units = 28
 
 # Step 1 Preprocess data
 from keras.datasets import mnist
@@ -29,14 +29,14 @@ y_test = keras.utils.to_categorical(y_test, n_classes)
 model = Sequential()
 
 # Simple RNN Cell
-model.add(SimpleRNN(hidden_units,
-                    activation='relu',
-                    input_shape=X_train.shape[1:]))
-
-# LSTM Cell
-# model.add(LSTM(hidden_units,
+# model.add(SimpleRNN(hidden_units,
 #                     activation='relu',
 #                     input_shape=X_train.shape[1:]))
+
+# LSTM Cell
+model.add(LSTM(hidden_units,
+                    activation='relu',
+                    input_shape=X_train.shape[1:]))
 
 # GRU Cell
 # model.add(GRU(hidden_units,
