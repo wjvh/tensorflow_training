@@ -5,6 +5,7 @@ These are the exercise files used for [Deep Learning and Machine Learning with T
 
 The course outline can be found in 
 https://www.tertiarycourses.com.sg/deep-learning-neural-network-tensorflow.html
+https://www.tertiarycourses.com.my/deep-learning-neural-network-tensorflow-malaysia.html
 
 
 <h2>Day 1</h2>
