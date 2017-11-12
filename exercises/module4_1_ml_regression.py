@@ -33,6 +33,7 @@ sess.run(init)
 # # Step 5: Training Loop
 for i in range(1000):
   sess.run(train, {X:X_train, y:y_train})
+  print(W)
 
 # Step 6: Evaluation
 import matplotlib.pyplot as plt

@@ -9,7 +9,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 learning_rate = 0.5
 training_epochs = 2
 batch_size = 100
-logdir = '/users/alfred/Desktop/mnist/adam2'
+logdir = '/tmp/mnist/adam2'
 
 import tensorflow as tf
 tf.set_random_seed(25)

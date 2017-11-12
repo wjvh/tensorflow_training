@@ -41,18 +41,18 @@ model.add(Dense(L3, activation='relu'))
 model.add(Dense(n_classes, activation='softmax'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-logger = keras.callbacks.TensorBoard(
-    log_dir='temp/keras',
-    histogram_freq=4,
-    write_graph=True
-)
+# logger = keras.callbacks.TensorBoard(
+#     log_dir='temp/keras',
+#     histogram_freq=4,
+#     write_graph=True
+# )
 
 # Step 3: Training
 model.fit(X_train,
           y_train,
           epochs=training_epochs,
           verbose=2,
-          callbacks = [logger]
+          # callbacks = [logger]
           )
 
 # Step 4: Evaluation
@@ -60,4 +60,4 @@ score = model.evaluate(X_test, y_test)
 print("\nTraining Accuracy = ",score[1],"Loss",score[0])
 
 #from keras.models import load_model
-model.save("trained_model_iris.h5")
+# model.save("trained_model_iris.h5")

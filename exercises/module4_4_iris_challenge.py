@@ -15,6 +15,7 @@ from sklearn import datasets
 iris = datasets.load_iris()
 X = iris.data
 target = iris.target
+print(target)
 
 # Convert the label into one-hot vector
 num_labels = len(np.unique(target))

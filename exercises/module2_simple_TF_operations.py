@@ -6,13 +6,14 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 import tensorflow as tf
 import numpy as np
 sess = tf.Session()
-
-# Constants
+#
+# # Constants
 # a = tf.constant(1)
 # b = tf.constant(2)
 # c = tf.constant(3)
+# print(a)
 #
-# sess = tf.Session()
+# # Run session
 # print(sess.run(a))
 # print(sess.run(b))
 # print(sess.run(c))
@@ -33,8 +34,17 @@ sess = tf.Session()
 # c = tf.floordiv(a, b)
 # c = tf.mod(a, b)
 # print(sess.run(c))
+#
 
-# tensor `a` is [1.8, 2.2], dtype=tf.float
+# Ex math operations
+# a = tf.constant(2)
+# b = tf.constant(3)
+# c = tf.constant(5)
+# d = tf.add(tf.multiply(a,b),c)
+# print("result=",sess.run(d))
+
+
+# # tensor `a` is [1.8, 2.2], dtype=tf.float
 # a = tf.constant(1.8,dtype=tf.float32)
 # b = tf.cast(a, tf.int32)
 # print(sess.run(a))
@@ -87,9 +97,18 @@ sess = tf.Session()
 # Special Matrices
 # a = tf.zeros([2,3])
 # a = tf.ones([2,3])
-# a = tf.diag(np.ones(2))
+# a = tf.diag(np.ones(3))
 # a = tf.fill([2,3],2)
 # print(sess.run(a))
+
+# Matrix operations example
+# x = tf.constant([[1,1]])
+# w = tf.constant([[1,2],[3,4]])
+# b = tf.constant([[2,2]])
+# y = tf.add(tf.matmul(x,w),b)
+# print(sess.run(y))
+
+
 
 # Random Numbers
 # tf.set_random_seed(2)

@@ -5,9 +5,9 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 # Parameters
-learning_rate = 0.5
+learning_rate = 0.001
 training_epochs = 2
-batch_size = 100
+batch_size = 50
 rnn_size = 128
 
 import tensorflow as tf
@@ -26,12 +26,12 @@ B = tf.Variable(tf.random_normal([10]))
 # Step 2: Setup Model
 inp = tf.unstack(X, axis=1)
 
-# cell = rnn.BasicRNNCell(rnn_size) # Simple RNN  Cell
-# H = rnn.static_rnn(cell, inp, dtype=tf.float32)
+cell = rnn.BasicRNNCell(rnn_size) # Simple RNN  Cell
+H = rnn.static_rnn(cell, inp, dtype=tf.float32)
 
 # cell = rnn.BasicLSTMCell(rnn_size) # LSTM Cell
-cell = rnn.GRUCell(rnn_size) # GRU Cell
-H, C = rnn.static_rnn(cell, inp, dtype=tf.float32)
+# cell = rnn.GRUCell(rnn_size) # GRU Cell
+# H, C = rnn.static_rnn(cell, inp, dtype=tf.float32)
 
 Ylogits = tf.matmul(H[-1], W) + B
 yhat = tf.nn.softmax(Ylogits)

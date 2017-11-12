@@ -8,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # Parameters
 learning_rate = 0.05
 training_epochs = 20
-logdir = '/tmp/iris/8878/3'
+logdir = '/tmp/demo/8878/3'
 
 import tensorflow as tf
 import numpy as np
@@ -47,9 +47,9 @@ B4 = tf.Variable(tf.truncated_normal([3], stddev=0.1))
 # Step 2: Setup Model
 with tf.name_scope('Model'):
     # Step 2: Setup Model
-    Y1 = tf.nn.relu(tf.matmul(X, W1) + B1)
-    Y2 = tf.nn.relu(tf.matmul(Y1, W2) + B2)
-    Y3 = tf.nn.relu(tf.matmul(Y2, W3) + B3)
+    Y1 = tf.nn.sigmoid(tf.matmul(X, W1) + B1)
+    Y2 = tf.nn.sigmoid(tf.matmul(Y1, W2) + B2)
+    Y3 = tf.nn.sigmoid(tf.matmul(Y2, W3) + B3)
     Ylogits = tf.matmul(Y3, W4) + B4
     yhat = tf.nn.softmax(Ylogits)
 

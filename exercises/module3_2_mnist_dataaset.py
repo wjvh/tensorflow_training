@@ -14,10 +14,10 @@ y_train = mnist.train.labels
 X_test = mnist.test.images
 y_test = mnist.test.labels
 
-# print(X_train.shape)
-# print(y_train.shape)
-# print(X_test.shape)
-# print(y_test.shape)
+print(X_train.shape)
+print(y_train.shape)
+print(X_test.shape)
+print(y_test.shape)
 
 def show_digit(index):
     label = y_train[index].argmax(axis=0)
@@ -26,9 +26,7 @@ def show_digit(index):
     plt.imshow(image, cmap='gray_r')
     plt.show()
 
-
 show_digit(1)
 
-
-# batch_X, batch_Y = mnist.train.next_batch(100)
-# print(batch_X.shape)
+batch_X, batch_Y = mnist.train.next_batch(100)
+print(batch_X.shape)
